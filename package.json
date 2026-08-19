@@ -1,0 +1,24 @@
+{
+  "name": "codex-proxy",
+  "version": "0.1.0",
+  "description": "Local Responses-API proxy that lets Codex Desktop and CLI use any LLM.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "codex-proxy": "./bin/codex-proxy.js"
+  },
+  "files": ["bin", "src", "README.md", "LICENSE", "config.example.json"],
+  "scripts": {
+    "start": "bun run src/cli.ts start",
+    "test": "bun test",
+    "typecheck": "bunx tsc --noEmit",
+    "build": "bun build src/cli.ts --compile --minify --outfile dist/codex-proxy"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

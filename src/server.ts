@@ -5,7 +5,7 @@ import { bridgeEvents, collectText } from "./responses/bridge.ts";
 import { parseResponsesRequest } from "./responses/parse.ts";
 import { parseSse, sse, sseComment } from "./responses/sse.ts";
 import { id } from "./ids.ts";
-import { listSlugs, routeModel } from "./router.ts";
+import { listSlugs, routeModel, routeModelMultimodal } from "./router.ts";
 import type { AdapterEvent, FetchFn, ParsedRequest, ProxyConfig, ResolvedProvider } from "./types.ts";
 
 export const VERSION = "0.1.0";
@@ -209,7 +209,7 @@ export function createHandler(
           { role: "system", content: [{ type: "text", text: COMPACT_PROMPT }] },
           ...parsed.messages.filter((message) => message.role !== "system"),
         ];
-        const provider = routeModel(parsed.model, config);
+        const provider = routeModelMultimodal(parsed.model, config, process.env, parsed.messages);
         const adapter = getAdapter(provider.adapter);
         const { response } = await runAdapter(parsed, provider, fetchFn, request.signal);
         if (!response.ok) {
@@ -233,7 +233,7 @@ export function createHandler(
       try {
         const body = await readJson(request);
         const parsed = prepareParsed(parseResponsesRequest(body));
-        const provider = routeModel(parsed.model, config);
+        const provider = routeModelMultimodal(parsed.model, config, process.env, parsed.messages);
         if (!provider.apiKey && provider.adapter !== "openai-chat") {
           return json(
             errorPayload(

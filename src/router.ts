@@ -124,3 +124,18 @@ export function defaultSlug(config: ProxyConfig): string {
   if (!provider || !model) throw new Error("No models configured");
   return slugFor(providerId, model.id);
 }
+
+// MULTIMODAL ROUTING PATCH
+export function routeModelMultimodal(
+  requested: string,
+  config: ProxyConfig,
+  env: NodeJS.ProcessEnv,
+  messages?: Array<{role: string; content: Array<{type: string}>}>
+): ResolvedProvider {
+  const hasImages = messages && messages.length > 0 && messages[messages.length - 1].role === 'user' && messages[messages.length - 1].content.some(p => p.type === 'image');
+  if (hasImages && (requested.endsWith('zai-glm-5') || requested === 'zai-glm-5')) {
+    console.error('[multimodal] Vision request -> claude-sonnet-5-5');
+    return routeModel('cergea/claude-sonnet-5-5', config, env);
+  }
+  return routeModel(requested, config, env);
+}
